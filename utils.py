@@ -45,6 +45,10 @@ def get_model(name, model_kwargs=None, task_name=None):
     elif 'mtmt' in name:
         if model_kwargs is None:
             model_kwargs = {'name': 'mtmt_res_emb_v0_4_0', 't_dim': 1, 'u_dim': 128, 'tu_dim':256}
+        # Use task_name if provided, otherwise use default
+        if task_name is not None:
+            num_cls = [1] * len(task_name)  # assume all tasks are regression/binary
+            return mtmt_res_emb_v0_4_0(task_names=task_name, num_cls=num_cls), model_kwargs
         return mtmt_res_emb_v0_4_0(), model_kwargs
     elif 'euen' in name:
         model_kwargs = {'input_dim': 193, 'hc_dim': 64, 'hu_dim': 64}
@@ -71,12 +75,28 @@ def save_best(valid_metrics, best_valid_metrics, metric_names,
              model, optimizer, scaler, ckpt_path, epoch, tr_loss, tr_steps,
              true_labels, predictions, treatment, pred_path, result_early_stop):
     is_early_stop = True
-    for metric_name in metric_names:  
-        if valid_metrics[metric_name] > best_valid_metrics[metric_name]:
-            is_early_stop = False
-            save_model(model, optimizer, scaler, ckpt_path, epoch, tr_loss / tr_steps, metric_name, valid_metrics)
-            save_predictions(true_labels, predictions, treatment, valid_metrics, metric_name, pred_path)
-            best_valid_metrics[metric_name] = valid_metrics[metric_name]
-            result_early_stop = 0
+    
+    # Handle regression metrics (MSE should be minimized, not maximized)
+    for metric_name in metric_names:
+        if metric_name not in valid_metrics:
+            # Skip metrics that don't exist (e.g., when using regression instead of classification)
+            continue
+            
+        # For MSE, lower is better
+        if metric_name == 'MSE':
+            if valid_metrics[metric_name] < best_valid_metrics[metric_name]:
+                is_early_stop = False
+                save_model(model, optimizer, scaler, ckpt_path, epoch, tr_loss / tr_steps, metric_name, valid_metrics)
+                save_predictions(true_labels, predictions, treatment, valid_metrics, metric_name, pred_path)
+                best_valid_metrics[metric_name] = valid_metrics[metric_name]
+                result_early_stop = 0
+        # For other metrics (QINI, u_at_k, etc.), higher is better
+        else:
+            if valid_metrics[metric_name] > best_valid_metrics[metric_name]:
+                is_early_stop = False
+                save_model(model, optimizer, scaler, ckpt_path, epoch, tr_loss / tr_steps, metric_name, valid_metrics)
+                save_predictions(true_labels, predictions, treatment, valid_metrics, metric_name, pred_path)
+                best_valid_metrics[metric_name] = valid_metrics[metric_name]
+                result_early_stop = 0
 
     return best_valid_metrics, is_early_stop, result_early_stop

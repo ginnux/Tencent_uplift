@@ -106,9 +106,10 @@ def get_data(train_files, test_files, target_treatment, target_task, batch_size=
     
     treatment_index = [idx for idx, elem in enumerate(labels) if elem in target_treatment]
     task_index = [idx for idx, elem in enumerate(labels) if elem in target_task]
-    task_index.append(371)  # pre30_login_days, used for additional regularization
+    # task_index.append(371)  # pre30_login_days, used for additional regularization - disabled as column 371 doesn't exist in current dataset
     
-    feature_index = [idx for idx, elem in enumerate(labels) if elem[:3] == 'fea' and 'login_days' not in elem]
+    # Select feature columns: either starting with 'fea' or 'X_'
+    feature_index = [idx for idx, elem in enumerate(labels) if (elem[:3] == 'fea' or elem[:2] == 'X_') and 'login_days' not in elem]
     # feature_index = [idx for idx, elem in enumerate(labels) if elem[:3] == 'fea']
     if feature_group != None:
         pad = True if 'pad' in feature_group else False
@@ -214,6 +215,9 @@ class CustomDatasetHdf5MultiChunk(Dataset):
             self.chunk_load_threads[source_file].join()  # Ensure the chunk is loaded before accessing it
 
         data_idx = idx - self.current_chunk[source_file][0]
+        if data_idx >= len(self.data[source_file]):
+            data_idx = len(self.data[source_file]) - 1
+            
         return self.data[source_file][data_idx].astype(np.float32)
     
     def __del__(self):
@@ -238,4 +242,3 @@ if __name__ == '__main__':
                                           fold_id=0, batch_size=1024)
     for batch in tqdm(train_loader):
         ...
-

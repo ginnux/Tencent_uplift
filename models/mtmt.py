@@ -213,7 +213,12 @@ class MTMT(nn.Module):
 
         # lower tau for active players but not necessarily vice versa; set pre30 > 25 (0.58) as high active
         treat = treat[:, 0] if treat.dim() > 1 else treat
-        loss5 = torch.clamp(F.mse_loss(1 - tu_logit, torch.ones_like(tu_logit, device=tu_logit.device), reduction='none') * (y_true[:, 1] > 0.6) * treat, min=0.2).mean()
+        
+        # Only calculate loss5 if we have multiple tasks (y_true has more than 1 column)
+        if y_true.shape[1] > 1:
+            loss5 = torch.clamp(F.mse_loss(1 - tu_logit, torch.ones_like(tu_logit, device=tu_logit.device), reduction='none') * (y_true[:, 1] > 0.6) * treat, min=0.2).mean()
+        else:
+            loss5 = torch.tensor(0.0, device=y_true.device)
        
         if reduction == 'none':
             return loss1, loss5

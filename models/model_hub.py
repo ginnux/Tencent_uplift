@@ -215,9 +215,9 @@ def mtmt_res_disc_mlp__emb_MLP_v0():
                 task_names=['label_nextday_login'],
                 t_dim=16, u_dim=128, tu_dim=256)
 
-def mtmt_res_emb_v0_4_0(**kwargs):
-    return MTMT(user_feat_enc=resnet18(hidden_dim=16, out_dim=None, drop=0.2), treat_feat_enc=nn.Embedding(num_embeddings=2, embedding_dim=16), task_names=['label_nextday_login'],
-                 t_dim=1, u_dim=128, tu_dim=256, **kwargs)
+def mtmt_res_emb_v0_4_0(task_names=['label_nextday_login'], num_cls=[1], **kwargs):
+    return MTMT(user_feat_enc=resnet18(hidden_dim=16, out_dim=None, drop=0.2), treat_feat_enc=nn.Embedding(num_embeddings=2, embedding_dim=16), task_names=task_names,
+                 t_dim=1, u_dim=128, tu_dim=256, num_cls=num_cls, **kwargs)
 
 def mtmt_res_emb_v0_4_0_mtreat(**kwargs):
     return MTMT(user_feat_enc=resnet18(hidden_dim=16, out_dim=None, drop=0.2),
