@@ -14,14 +14,14 @@ import os
 # df = pd.DataFrame(data)
 
 # 请替换成你自己的数据加载方式
-df = pd.read_csv("fix.csv") 
+df = pd.read_csv("fix_bin.csv") 
 # Y_COST	T_speed_fast	T_style_energetic	T_has_influencer	T_structure_aida	T_visual_closeup	T_overlay_subtitle	X_duration	X_shot_count	X_has_risk	X_min_age
 
 # 2. 定义列顺序并创建 OUT_COLUMN_new 文件
 # 确保这个顺序与你的 DataFrame 列名对应
 # column_order = [f'X{i}' for i in range(1, 11)] + ['T1', 'Y'] # 示例：10个特征，1个处理，1个标签
-# column_order = ["X_duration","X_shot_count", "X_has_risk", "X_min_age", "T_speed_fast", "T_style_energetic", "T_has_influencer", "T_structure_aida", "T_visual_closeup", "T_overlay_subtitle", "Y_COST"]
-column_order = ["X_duration","X_shot_count", "X_has_risk", "X_min_age", "X_speed_fast", "X_style_energetic", "T_has_influencer", "X_structure_aida", "X_visual_closeup", "X_overlay_subtitle", "Y_COST"]
+column_order = ["X_duration","X_shot_count", "X_has_risk", "X_min_age", "T_speed_fast", "T_style_energetic", "T_has_influencer", "T_structure_aida", "T_visual_closeup", "T_overlay_subtitle", "Y_COST_BIN"]
+# column_order = ["X_duration","X_shot_count", "X_has_risk", "X_min_age", "X_speed_fast", "X_style_energetic", "T_has_influencer", "X_structure_aida", "X_visual_closeup", "X_overlay_subtitle", "Y_COST_BIN"]
 # column_order = list(df.columns) # 如果你的df已经是想要的顺序
 
 # 创建目录和文件

@@ -333,7 +333,7 @@ if __name__ == "__main__":
     ave_best_valid_metrics = None
     # target_treatment = ["T_speed_fast", "T_style_energetic", "T_has_influencer", "T_structure_aida", "T_visual_closeup", "T_overlay_subtitle"]
     target_treatment = ["T_has_influencer"]
-    target_task = ["Y_COST"]
+    target_task = ["Y_COST_BIN"]
     args.data_type = 'mtask' if args.mtask else args.data_type
     reduction = 'mean'
     
